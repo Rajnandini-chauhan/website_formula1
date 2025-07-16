@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formula 1 Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2f0907 0%, #d2110d 50%, #250301 100%);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(225, 6, 0, 0.3);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            background: linear-gradient(45deg, black);
+            color:goldenrod;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .section {
+            display: none;
+            padding: 120px 0 50px;
+            min-height: 100vh;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .hero {
+            text-align: center;
+
+        }
+
+        .hero h1 {
+            font-size: 7rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(white);
+            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            text-shadow: 0 0 30px rgba(225, 6, 0, 0.5);
+        }
+
+        .hero p {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            color: rgb(233, 168, 45);
+        }
+
+        .hero button {
+            background-color: red;
+            color: white;
+            font-size: 1rem;
+            border-radius: 2rem;
+            margin:10px;
+            padding:10px;
+        }
+        .hero button a{
+            text-decoration: none;
+            color:white;
+        }
+        .hero button a:hover{
+            text-decoration: dotted;
+            color:black;
+            cursor: pointer;
+        }
+
+        .video-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .video-container video {
+            width: 100%;
+            height: auto;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 3rem auto;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .drivers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .driver-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .driver-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(225, 6, 0, 0.3);
+            border-color: #e10600;
+        }
+
+        .driver-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 20%;
+            margin: 0 auto 1rem;
+            background: linear-gradient(45deg, #e10600, #ff4444);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            overflow: hidden;
+        }
+
+        .driver-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid #e10600;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #e10600;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .event-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            border-color: #ffd700;
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.2);
+        }
+
+        .quiz-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .question {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .options {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            background: rgba(225, 6, 0, 0.3);
+            border-color: #e10600;
+        }
+
+        .option.selected {
+            background: #e10600;
+            border-color: #e10600;
+        }
+
+        .quiz-btn {
+            background: linear-gradient(45deg, #e10600, #ff4444);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .quiz-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(225, 6, 0, 0.4);
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 1px solid #ffd700;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, red ,white);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                right: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background: linear-gradient(135deg, black);
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                padding-top: 2rem;
+                transition: right 0.3s ease;
+                backdrop-filter: blur(10px);
+            }
+            
+            .nav-links.active {
+                right: 0;
+            }
+            
+            .nav-links li {
+                margin: 1rem 0;
+                width: 80%;
+            }
+            
+            .nav-links a {
+                display: block;
+                text-align: center;
+                width: 100%;
+                padding: 1rem;
+                font-size: 1.2rem;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.1);
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .drivers-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">F1 HUB</div>
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#" onclick="showSection('home')">Home</a></li>
+                <li><a href="#" onclick="showSection('drivers')">Drivers</a></li>
+                <li><a href="#" onclick="showSection('events')">Events</a></li>
+                <li><a href="#" onclick="showSection('quiz')">Quiz</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Home Section -->
+    <section id="home" class="section active">
+        <div class="container">
+            <div class="hero">
+                <h1>FORMULA 1</h1>
+                <p>Experience the pinnacle of motorsport</p>
+                <div class="video-container">
+                    <video controls poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%23000'/%3E%3Ctext x='400' y='225' text-anchor='middle' fill='%23e10600' font-size='24' font-family='Arial'%3EF1 Highlights Video%3C/text%3E%3C/svg%3E">
+                        <source src="task3/F1® 22 _ Features Trailer.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <button >
+                        <a href="#" onclick="showSection('drivers')">Meet the Drivers</a>
+                    </button>
+                    <button>
+                        <a href="#" onclick="showSection('events')">Check the Events</a>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Drivers Section -->
+    <section id="drivers" class="section">
+        <div class="container">
+            <h2 class="section-title">F1 Drivers 2024</h2>
+            <div class="drivers-grid" id="driversGrid"></div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section id="events" class="section">
+        <div class="container">
+            <h2 class="section-title">Important F1 Events</h2>
+            <div class="events-grid" id="eventsGrid"></div>
+        </div>
+    </section>
+
+    <!-- Quiz Section -->
+    <section id="quiz" class="section">
+        <div class="container">
+            <h2 class="section-title">F1 Quiz Challenge</h2>
+            <div class="quiz-container">
+                <div id="quizContent">
+                    <div class="question" id="question"></div>
+                    <div class="options" id="options"></div>
+                    <button class="quiz-btn" id="nextBtn" onclick="nextQuestion()">Next Question</button>
+                </div>
+                <div class="score-display" id="scoreDisplay" style="display: none;"></div>
+                <button class="quiz-btn" id="restartBtn" onclick="restartQuiz()" style="display: none;">Restart Quiz</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Sample F1 drivers data with real images
+        const drivers = [
+            { name: "Max Verstappen", team: "Red Bull Racing", country: "Netherlands", championships: 3, age: 27, photo: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/1col/image.png" },
+            { name: "Lewis Hamilton", team: "Mercedes", country: "United Kingdom", championships: 7, age: 40, photo: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LEWHAM01_Lewis_Hamilton/lewham01.png.transform/1col/image.png" },
+            { name: "Charles Leclerc", team: "Ferrari", country: "Monaco", championships: 0, age: 27, photo: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/C/CHALEC01_Charles_Leclerc/chalec01.png.transform/1col/image.png" },
+            { name: "Lando Norris", team: "McLaren", country: "United Kingdom", championships: 0, age: 25, photo: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LANNOR01_Lando_Norris/lannor01.png.transform/1col/image.png" },
+            { name: "Oscar Piastri", team: "McLaren", country: "Australia", championships: 0, age: 24, photo: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/O/OSCPIA01_Oscar_Piastri/oscpia01.png.transform/1col/image.png" },
+            { name: "Carlos Sainz", team: "Ferrari", country: "Spain", championships: 0, age: 31, photo: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/C/CARSAI01_Carlos_Sainz/carsai01.png.transform/1col/image.png" },
+            { name: "George Russell", team: "Mercedes", country: "United Kingdom", championships: 0, age: 27, photo: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/G/GEORUS01_George_Russell/georus01.png.transform/1col/image.png" },
+            { name: "Sergio Perez", team: "Red Bull Racing", country: "Mexico", championships: 0, age: 35, photo: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/S/SERPER01_Sergio_Perez/serper01.png.transform/1col/image.png" },
+            { name: "Fernando Alonso", team: "Aston Martin", country: "Spain", championships: 2, age: 43, photo: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/F/FERALO01_Fernando_Alonso/feralo01.png.transform/1col/image.png" },
+            { name: "Lance Stroll", team: "Aston Martin", country: "Canada", championships: 0, age: 26, photo: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LANSTR01_Lance_Stroll/lanstr01.png.transform/1col/image.png" }
+        ];
+
+        // F1 Events data
+        const events = [
+            {
+                name: "Monaco Grand Prix",
+                date: "May 26, 2024",
+                location: "Monte Carlo, Monaco",
+                description: "The most prestigious race in F1, known for its glamour and challenging street circuit through the heart of Monaco.",
+                type: "Race Weekend"
+            },
+            {
+                name: "Las Vegas Grand Prix",
+                date: "November 23, 2024",
+                location: "Las Vegas, USA",
+                description: "The newest addition to F1, featuring a spectacular night race on the Las Vegas Strip.",
+                type: "Race Weekend"
+            },
+            {
+                name: "F1 Testing",
+                date: "February 2024",
+                location: "Bahrain International Circuit",
+                description: "Pre-season testing where teams prepare their cars and drivers for the upcoming season.",
+                type: "Testing"
+            },
+            {
+                name: "British Grand Prix",
+                date: "July 7, 2024",
+                location: "Silverstone, UK",
+                description: "The home of British motorsport, featuring one of the fastest and most historic circuits in F1.",
+                type: "Race Weekend"
+            }
+        ];
+
+        // Quiz questions
+        const quizQuestions = [
+            {
+                question: "Who holds the record for most F1 World Championships?",
+                options: ["Lewis Hamilton", "Michael Schumacher", "Ayrton Senna", "Max Verstappen"],
+                correct: 0
+            },
+            {
+                question: "Which circuit is known as 'The Temple of Speed'?",
+                options: ["Silverstone", "Monaco", "Monza", "Spa-Francorchamps"],
+                correct: 2
+            },
+            {
+                question: "How many points does a race winner receive?",
+                options: ["20", "25", "30", "15"],
+                correct: 1
+            },
+            {
+                question: "Which team has won the most Constructors' Championships?",
+                options: ["McLaren", "Williams", "Ferrari", "Mercedes"],
+                correct: 2
+            },
+            {
+                question: "What does DRS stand for?",
+                options: ["Drag Reduction System", "Direct Racing System", "Dynamic Response System", "Differential Rate System"],
+                correct: 0
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedAnswer = -1;
+        let quizScores = [];
+
+        // Initialize the website
+        function init() {
+            loadDrivers();
+            loadEvents();
+            loadQuiz();
+            loadScores();
+        }
+
+        // Navigation
+        function showSection(sectionName) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Close mobile menu after selection
+            const navLinks = document.getElementById('navLinks');
+            const hamburger = document.querySelector('.hamburger');
+            navLinks.classList.remove('active');
+            hamburger.classList.remove('active');
+        }
+
+        // Toggle mobile menu
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            const hamburger = document.querySelector('.hamburger');
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+
+        // Load drivers
+        function loadDrivers() {
+            const grid = document.getElementById('driversGrid');
+            grid.innerHTML = drivers.map(driver => `
+                <div class="driver-card" onclick="showDriverDetails('${driver.name}')">
+                    <div class="driver-photo">
+                        <img src="${driver.photo}" alt="${driver.name}" onerror="this.style.display='none'; this.parentNode.innerHTML='${driver.name.split(' ').map(n => n[0]).join('')}'">
+                    </div>
+                    <h3>${driver.name}</h3>
+                    <p>${driver.team}</p>
+                </div>
+            `).join('');
+        }
+
+        // Show driver details
+        function showDriverDetails(driverName) {
+            const driver = drivers.find(d => d.name === driverName);
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <h2>${driver.name}</h2>
+                <div class="driver-photo" style="margin: 1rem auto;">
+                    <img src="${driver.photo}" alt="${driver.name}" onerror="this.style.display='none'; this.parentNode.innerHTML='${driver.name.split(' ').map(n => n[0]).join('')}'">
+                </div>
+                <p><strong>Team:</strong> ${driver.team}</p>
+                <p><strong>Country:</strong> ${driver.country}</p>
+                <p><strong>Age:</strong> ${driver.age}</p>
+                <p><strong>Championships:</strong> ${driver.championships}</p>
+                <p><strong>Status:</strong> ${driver.championships > 0 ? 'World Champion' : 'Active Driver'}</p>
+            `;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        // Load events
+        function loadEvents() {
+            const grid = document.getElementById('eventsGrid');
+            grid.innerHTML = events.map(event => `
+                <div class="event-card" onclick="showEventDetails('${event.name}')">
+                    <h3>${event.name}</h3>
+                    <p><strong>Date:</strong> ${event.date}</p>
+                    <p><strong>Location:</strong> ${event.location}</p>
+                    <p><strong>Type:</strong> ${event.type}</p>
+                </div>
+            `).join('');
+        }
+
+        // Show event details
+        function showEventDetails(eventName) {
+            const event = events.find(e => e.name === eventName);
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <h2>${event.name}</h2>
+                <p><strong>Date:</strong> ${event.date}</p>
+                <p><strong>Location:</strong> ${event.location}</p>
+                <p><strong>Type:</strong> ${event.type}</p>
+                <p><strong>Description:</strong> ${event.description}</p>
+            `;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // Load quiz
+        function loadQuiz() {
+            displayQuestion();
+        }
+
+        // Display current question
+        function displayQuestion() {
+            if (currentQuestionIndex >= quizQuestions.length) {
+                endQuiz();
+                return;
+            }
+
+            const question = quizQuestions[currentQuestionIndex];
+            document.getElementById('question').innerHTML = `Question ${currentQuestionIndex + 1}: ${question.question}`;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = question.options.map((option, index) => `
+                <div class="option" onclick="selectAnswer(${index})">${option}</div>
+            `).join('');
+
+            selectedAnswer = -1;
+        }
+
+        // Select answer
+        function selectAnswer(index) {
+            document.querySelectorAll('.option').forEach(option => option.classList.remove('selected'));
+            document.querySelectorAll('.option')[index].classList.add('selected');
+            selectedAnswer = index;
+        }
+
+        // Next question
+        function nextQuestion() {
+            if (selectedAnswer === -1) {
+                alert('Please select an answer!');
+                return;
+            }
+
+            if (selectedAnswer === quizQuestions[currentQuestionIndex].correct) {
+                score++;
+            }
+
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+
+        // End quiz
+        function endQuiz() {
+            document.getElementById('quizContent').style.display = 'none';
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const restartBtn = document.getElementById('restartBtn');
+            
+            scoreDisplay.innerHTML = `
+                <h3>Quiz Complete!</h3>
+                <p>Your Score: ${score}/${quizQuestions.length}</p>
+                <p>Percentage: ${Math.round((score / quizQuestions.length) * 100)}%</p>
+            `;
+            
+            scoreDisplay.style.display = 'block';
+            restartBtn.style.display = 'block';
+
+            // Save score
+            quizScores.push({
+                score: score,
+                total: quizQuestions.length,
+                date: new Date().toLocaleDateString()
+            });
+            saveScores();
+        }
+
+        // Restart quiz
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedAnswer = -1;
+            
+            document.getElementById('quizContent').style.display = 'block';
+            document.getElementById('scoreDisplay').style.display = 'none';
+            document.getElementById('restartBtn').style.display = 'none';
+            
+            displayQuestion();
+        }
+
+        // Save scores to memory
+        function saveScores() {
+            // In a real application, you would save to a database
+            console.log('Scores saved:', quizScores);
+        }
+
+        // Load scores from memory
+        function loadScores() {
+            // In a real application, you would load from a database
+            console.log('Scores loaded:', quizScores);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Initialize when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>
